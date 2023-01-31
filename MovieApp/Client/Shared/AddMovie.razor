@@ -1,0 +1,19 @@
+﻿@page "/add-movie"
+@inject NavigationManager navigation
+@using System.Text
+@inject HttpClient client
+@using MovieApp.Shared.DTOs
+
+<h3>Add Movie</h3>
+<div class="container align-items-lg-start">    
+    <MovieDetailsAdd ActionType="AddNewMovie"/>
+</div>
+
+@code {
+    private async Task AddNewMovie(MovieDto movie)
+    {
+        var json = new StringContent(System.Text.Json.JsonSerializer.Serialize(movie), Encoding.UTF8, "application/json");
+        await client.PostAsync("https://localhost:44311/api/movies", json);
+        navigation.NavigateTo("/movies");
+    }
+}

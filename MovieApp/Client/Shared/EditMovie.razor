@@ -1,0 +1,46 @@
+﻿@page "/movies/edit-movie/{IdMovie:int}"
+@inject NavigationManager navigation
+@using System.Text
+@inject HttpClient client
+@using MovieApp.Shared.DTOs
+
+<h3>Edit Movie</h3>
+
+@if (EdittedMovie != null)
+{
+<div class="container align-items-lg-start">
+    <MovieDetailsEdit EdittedMovie="EdittedMovie" ActionType="EditMovieDetails" />
+</div>
+}
+else {
+    <h3>Loading...</h3>
+}
+
+@code {
+    public Movie EdittedMovie { get; set; }
+    [Parameter] public int IdMovie { get; set; }
+
+    public string test { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Console.WriteLine("IdMovie:" + IdMovie);
+        var response = await client.GetAsync($"https://localhost:44311/api/movies/{IdMovie}");
+        if (response.IsSuccessStatusCode)
+        {
+            var respStr = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(respStr);
+            EdittedMovie = System.Text.Json.JsonSerializer.Deserialize<Movie>(respStr, new System.Text.Json.JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        }
+
+    }
+
+    private async Task EditMovieDetails(MovieDto movie)
+    {
+        Console.WriteLine("Id on update request:" + IdMovie);
+        var json = new StringContent(System.Text.Json.JsonSerializer.Serialize(movie), Encoding.UTF8, "application/json");
+        await client.PutAsync($"https://localhost:44311/api/movies/{IdMovie}", json);
+        navigation.NavigateTo("/movies");
+    }
+}

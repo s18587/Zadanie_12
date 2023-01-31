@@ -1,0 +1,39 @@
+﻿@inject IJSRuntime js
+@inject NavigationManager navigation
+@inject HttpClient client
+
+<div class="movies-container">
+    <GenericList List="Movies">
+        <ElementTemplate Context="movie">
+            <IndividualMovie Movie="movie"
+                             EditMovie="EditMovie"
+                             DeleteMovie="DeleteMovie" @key="movie.Id" />
+        </ElementTemplate>
+    </GenericList>
+</div>
+
+@code {
+    [Parameter] public List<Movie> Movies { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private async Task DeleteMovie(Movie movie)
+    {
+        await js.MyFunction("custom message");
+        var confirmed = await js.Confirm($"Are you sure you want to delete {movie.Title}?");
+
+        if (confirmed)
+        {
+            await client.DeleteAsync($"https://localhost:44311/api/movies?IdMovie={movie.Id}");
+            navigation.NavigateTo("/movies", forceLoad: true);
+        }
+    }
+
+    private void EditMovie(Movie movie)
+    {
+        navigation.NavigateTo($"/movies/edit-movie/{movie.Id}");
+    }
+}

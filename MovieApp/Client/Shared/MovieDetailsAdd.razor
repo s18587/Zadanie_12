@@ -1,0 +1,49 @@
+﻿@using MovieApp.Shared.DTOs
+
+@if (MovieModel == null)
+{
+    <h3>Loading..</h3>
+}
+else
+{
+    <EditForm Model="@MovieModel" OnValidSubmit="@(() => ActionType.InvokeAsync(MovieModel))">
+        <div class="form-group">
+            <label>Title</label>
+            <InputText style="width: 35%" @bind-Value="@MovieModel.Title" class="form-control" id="Title"></InputText>
+        </div>
+        <div class="form-group">
+            <label>Summary</label>
+            <InputText style="width: 35%" @bind-Value="@MovieModel.Summary" class="form-control" id="Summary"></InputText>
+        </div>
+        <div class="input-group mb-3" style="width: 35%">
+            <input type="text" class="form-control" value="In Theaters" readonly>
+            <div class="input-group-prepend float-right">
+                <div class="input-group-text">
+                    <InputCheckbox @bind-Value="@MovieModel.InTheaters" id="InTheaters"></InputCheckbox>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Release Date</label>
+            <InputDate style="width: 35%" @bind-Value="@MovieModel.ReleaseDate" class="form-control" id="ReleaseDate"></InputDate>
+        </div>
+        <div class="form-group">
+            <label>Poster</label>
+            <InputText style="width: 35%" @bind-Value="@MovieModel.Poster" class="form-control" id="Poster"></InputText>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Add" />
+    </EditForm>
+}
+
+@code {
+    [Parameter] public EventCallback<MovieDto> ActionType { get; set; }
+
+    public MovieDto MovieModel { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        MovieModel = new MovieDto();
+    }
+}
